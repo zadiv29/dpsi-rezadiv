@@ -1,4 +1,5 @@
 const db = require('../config');
+const admin = require('firebase-admin'); // Add this line to require firebase-admin
 
 const topUpBalance = async (req, res) => {
   try {
