@@ -75,7 +75,7 @@ const messageAdmin = async (req, res) => {
   try {
     const { phoneNumber, message } = req.body;
 
-    const adminRef = db.collection('admin').doc('messages');
+    const adminRef = db.collection('users').doc('messages');
     await adminRef.update({
       messages: admin.firestore.FieldValue.arrayUnion({ phoneNumber, message, timestamp: new Date() })
     });
@@ -88,7 +88,7 @@ const messageAdmin = async (req, res) => {
 
 const viewMessages = async (req, res) => {
   try {
-    const messagesRef = db.collection('admin').doc('messages');
+    const messagesRef = db.collection('users').doc('messages');
     const messagesDoc = await messagesRef.get();
 
     if (!messagesDoc.exists) {
