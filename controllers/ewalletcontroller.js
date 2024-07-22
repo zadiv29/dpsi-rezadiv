@@ -76,9 +76,11 @@ const messageAdmin = async (req, res) => {
   try {
     const { phoneNumber, message } = req.body;
 
-    const adminRef = db.collection('users').doc('messages');
-    await adminRef.update({
-      messages: admin.firestore.FieldValue.arrayUnion({ phoneNumber, message, timestamp: new Date() })
+    const messageRef = db.collection('messages').doc();
+    await messageRef.set({
+      phoneNumber,
+      message,
+      timestamp: new Date()
     });
 
     res.status(200).send('Message sent to admin');
@@ -89,14 +91,18 @@ const messageAdmin = async (req, res) => {
 
 const viewMessages = async (req, res) => {
   try {
-    const messagesRef = db.collection('users').doc('messages');
-    const messagesDoc = await messagesRef.get();
+    const messagesRef = db.collection('messages');
+    const messagesSnapshot = await messagesRef.get();
 
-    if (!messagesDoc.exists) {
+    if (messagesSnapshot.empty) {
       return res.status(404).send('No messages found');
     }
 
-    const messages = messagesDoc.data().messages || [];
+    const messages = [];
+    messagesSnapshot.forEach(doc => {
+      messages.push(doc.data());
+    });
+
     res.status(200).json(messages);
   } catch (error) {
     res.status(500).send('Error retrieving messages: ' + error.message);
